@@ -113,11 +113,8 @@ Identify the external IP responsible for the initial RDP access.
 RDP session established from `88.97.178.12`.
 
 **Evidence**  
-`DeviceLogonEvents` on `azuki-sl` show successful logons for `kenji.sato` with:
 
-- `LogonType = Network` followed by `RemoteInteractive`  
-- `RemoteIP = 88.97.178.12`  
-- `AdditionalFields.IsLocalLogon = false`
+![Evidencia](../.media/th1ev1.png)
 
 **KQL**
 
@@ -129,10 +126,6 @@ DeviceLogonEvents
 | project Timestamp, AccountName, LogonType, RemoteIP, AdditionalFields
 | order by Timestamp asc
 ```
-<p align="left">
-  <img src="ruta/a/tu/imagen.png" alt="Evidencia" width="650"><br>
-  <em>Figura 1. Evento de inicio de sesión sospechoso</em>
-</p>
 
 **Why it matters**  
 Confirms this is an **external RDP intrusion using valid credentials**, not an internal login. Supports actions such as blocking the IP, geofencing, and hunting for previous attempts from the same address.
@@ -151,10 +144,8 @@ Determine which account was used for the unauthorized remote access.
 Compromised account: `azuki-sl\kenji.sato`.
 
 **Evidence**  
-RDP logons from `88.97.178.12` are associated with:
 
-- `AccountName = kenji.sato`  
-- `AccountDomain = azuki-sl`
+![Evidencia](../.media/th1ev1.png)
 
 **KQL**
 
@@ -186,6 +177,8 @@ The attacker executed:
 
 **Evidence**
 
+![Evidencia](../.media/th1ev2.png)
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -213,6 +206,8 @@ Identify the directory used to stage tools and stolen data.
 Creation and hiding of: `C:\ProgramData\WindowsCache`.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev4.png)
 
 ```kql
 DeviceProcessEvents
@@ -247,6 +242,8 @@ Defender exclusions added for:
 
 **Evidence**
 
+![Evidencia](../.media/th1ev5.png)
+
 ```kql
 DeviceRegistryEvents
 | where DeviceName == "azuki-sl"
@@ -276,6 +273,8 @@ Excluded path:
 
 **Evidence**
 
+![Evidencia](../.media/th1ev6.png)
+
 ```kql
 DeviceRegistryEvents
 | where DeviceName == "azuki-sl"
@@ -302,6 +301,8 @@ Identify native Windows binaries abused to download malware.
 Abuse of `certutil.exe` to download `svchost.exe` and `mm.exe` from `78.141.196.6:8080`.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev7.png)
 
 ```kql
 DeviceProcessEvents
@@ -337,6 +338,8 @@ Scheduled task name: **"Windows Update Check"**.
 
 **Evidence**
 
+![Evidencia](../.media/th1ev8.png)
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -364,7 +367,17 @@ Identify the binary executed by the scheduled task.
 Task target: `C:\ProgramData\WindowsCache\svchost.exe`.
 
 **Evidence**  
-Same `schtasks.exe /create` command as above, with `/tr C:\ProgramData\WindowsCache\svchost.exe`.
+
+![Evidencia](../.media/th1ev2.png)
+
+```kql
+DeviceProcessEvents
+| where DeviceName == "azuki-sl"
+| where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
+| where ProcessCommandLine contains "schtasks.exe"
+| project Timestamp, ProcessCommandLine, FileName, FolderPath
+| order by Timestamp asc
+```
 
 **Why it matters**  
 `svchost.exe` running from a **non-standard path** strongly indicates a masqueraded backdoor or loader.
