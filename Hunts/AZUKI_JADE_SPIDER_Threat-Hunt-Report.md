@@ -34,7 +34,7 @@ Based on observed behavior, the attacker’s goals were:
 
 ---
 
-## 3. High-Level Timeline (UTC, exact)
+## 3. Timeline (UTC)
 
 - **18:36:18** – Initial RDP login  
   - Logon from 88.97.178.12 using the account kenji.sato (Network → RemoteInteractive)
@@ -129,6 +129,10 @@ DeviceLogonEvents
 | project Timestamp, AccountName, LogonType, RemoteIP, AdditionalFields
 | order by Timestamp asc
 ```
+<p align="left">
+  <img src="ruta/a/tu/imagen.png" alt="Evidencia" width="650"><br>
+  <em>Figura 1. Evento de inicio de sesión sospechoso</em>
+</p>
 
 **Why it matters**  
 Confirms this is an **external RDP intrusion using valid credentials**, not an internal login. Supports actions such as blocking the IP, geofencing, and hunting for previous attempts from the same address.
