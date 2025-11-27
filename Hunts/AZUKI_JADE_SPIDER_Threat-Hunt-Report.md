@@ -400,6 +400,9 @@ Identify C2 IP and port.
 
 **Evidence**
 
+![Evidencia](../.media/th1ev10.png)
+![Evidencia](../.media/th1ev11.png)
+
 ```kql
 DeviceNetworkEvents
 | where DeviceName == "azuki-sl"
@@ -428,6 +431,8 @@ Identify the tool used for credential theft.
 Use of `mm.exe`, a renamed **Mimikatz** binary.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev12.png)
 
 ```kql
 DeviceProcessEvents
@@ -458,6 +463,8 @@ Command: `sekurlsa::logonpasswords`.
 
 **Evidence**
 
+![Evidencia](../.media/th1ev13.png)
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -483,6 +490,8 @@ Identify the ZIP archive used for data staging.
 Archive name: `export-data.zip` in `C:\ProgramData\WindowsCache`.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev14.png)
 
 ```kql
 DeviceFileEvents
@@ -511,6 +520,8 @@ Identify the external service used for data exfiltration.
 Exfiltration via **Discord** (webhook on `discord.com`).
 
 **Evidence**
+
+![Evidencia](../.media/th1ev15.png)
 
 ```kql
 DeviceProcessEvents
@@ -542,6 +553,8 @@ Determine which log was cleared first.
 First log cleared: **Security**.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev16.png)
 
 ```kql
 DeviceProcessEvents
@@ -577,6 +590,8 @@ Local account created: `support`, added to `Administrators`.
 
 **Evidence**
 
+![Evidencia](../.media/th1ev17.png)
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -606,6 +621,8 @@ Script: `wupdate.ps1` in `%TEMP%`.
 
 **Evidence**
 
+![Evidencia](../.media/th1ev18.png)
+
 ```kql
 DeviceFileEvents
 | where DeviceName == "azuki-sl"
@@ -632,6 +649,8 @@ Identify the host targeted for lateral movement.
 Target host: `10.1.0.188`.
 
 **Evidence**
+
+![Evidencia](../.media/th1ev19.png)
 
 ```kql
 DeviceProcessEvents
@@ -661,6 +680,7 @@ Tool: `mstsc.exe` (Remote Desktop client).
 
 **Evidence**  
 Same query as above shows `mstsc.exe /v:10.1.0.188`.
+![Evidencia](../.media/th1ev20.png)
 
 **Why it matters**  
 Using the native RDP client with cached credentials from `cmdkey.exe` disguises lateral movement as legitimate administration.
