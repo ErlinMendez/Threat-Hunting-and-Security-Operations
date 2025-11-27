@@ -1,11 +1,53 @@
-# Threat-Hunting-Lab
+# 🕵️‍♂️ Threat-Hunting-Lab
 
-This repository contains real threat hunting investigations documented in Markdown format.
+Repository containing **real-world threat hunting investigations**, documented in clear and structured Markdown reports.
 
-## 📁 Hunts
+---
 
-Below is a list of completed threat hunts:
+## 📁 Hunts  
+Completed threat hunting reports:
 
-- [AZUKI_JADE_SPIDER_Threat-Hunt-Report.md](Hunts/AZUKI_JADE_SPIDER_Threat-Hunt-Report.md)
+### 🔍 Available Reports
+- [AZUKI_JADE_SPIDER_Threat-Hunt-Report.md](./Hunts/AZUKI_JADE_SPIDER_Threat-Hunt-Report.md)
 
-More reports will be added soon.
+More investigations will be added soon.
+
+---
+
+## 📌 About this Repository  
+This repo is meant to showcase:
+
+- 🔹 **Detection logic development**  
+- 🔹 **KQL queries mapped to MITRE ATT&CK**  
+- 🔹 **Timeline reconstruction of intrusions**  
+- 🔹 **Analysis of Windows artifacts (DFIR)**  
+- 🔹 **Clear documentation for Blue Team workflows**
+
+---
+
+## 🍥 Repository Structure
+
+```txt
+/
+├── Hunts/ # Full reports (Markdown format)
+│   └── AZUKI_JADE_SPIDER_Threat-Hunt-Report.md
+└── README.md
+```
+
+---
+
+## 🛡️ Skills Demonstrated  
+- Threat Hunting  
+- KQL (Kusto Query Language)  
+- DFIR on Windows  
+- MITRE ATT&CK mapping  
+- SOC-style reporting  
+- Detection engineering  
+- Technology risk understanding tied to cyber threats  
+
+---
+
+## 📬 Contact  
+If you'd like to connect or collaborate:  
+**Erlin Mendez**  
+Cybersecurity Analyst (Blue Team) | Technology Risk  
