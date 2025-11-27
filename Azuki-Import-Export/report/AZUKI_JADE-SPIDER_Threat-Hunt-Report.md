@@ -34,37 +34,67 @@ Based on observed behavior, the attacker’s goals were:
 
 ---
 
-## 3. High-Level Timeline (UTC, approximated)
+## 3. High-Level Timeline (UTC, exact)
 
-- **18:36** – Initial RDP login  
-  - `DeviceLogonEvents`: `LogonType = Network` followed by `RemoteInteractive` for `kenji.sato` from `88.97.178.12`.
+- **18:36:18** – Initial RDP login  
+  - Logon from 88.97.178.12 using the account kenji.sato (Network → RemoteInteractive)
 
-- **~18:37–18:49** – Initial script execution  
-  - Download and execution of scripts in `%TEMP%`, including `wupdate.ps1`.
+- **18:46:27–18:46:52** – Initial script execution  
+  - Download of wupdate.ps1 and wupdate.bat via PowerShell (Invoke-WebRequest)
 
-- **~19:03–19:04** – Network discovery  
-  - Execution of `ipconfig.exe /all` and `ARP.EXE -a`.
+- **18:49:27–18:49:29** – Microsoft Defender exclusions (Extensions) added  
+  - .bat  
+  - .ps1  
+  - .exe  
 
-- **19:05–19:07** – Staging directory creation and hiding  
-  - Creation of `C:\ProgramData\WindowsCache` and marking it hidden/system with `attrib +h +s`.
+- **18:49:27** – Microsoft Defender exclusions (Paths) added  
+  - %TEMP%  
+  - C:\ProgramData\WindowsCache
 
-- **19:06–19:09** – Tool download and Defender exclusions  
-  - Use of `certutil.exe` and PowerShell to download `svchost.exe` and `mm.exe` into `WindowsCache`.  
-  - Defender exclusions configured for `.bat`, `.ps1`, `.exe` and for paths such as `%TEMP%` and `WindowsCache`.
+- **18:49:48** – Malicious script creation  
+  - wupdate.ps1 written to C:\Users\kenji.sato\AppData\Local\Temp\wupdate.ps1
 
-- **19:08–19:09** – Credential dumping  
-  - Execution of `mm.exe` (renamed Mimikatz) with `privilege::debug sekurlsa::logonpasswords`.
+- **19:05:33** – Staging directory creation and hiding  
+  - C:\ProgramData\WindowsCache created  
+  - Marked as hidden and system (+h +s)
 
-- **19:07–19:15** – Persistence and log tampering  
-  - Scheduled task **"Windows Update Check"** created to run `C:\ProgramData\WindowsCache\svchost.exe`.  
-  - Clearing of Security, System, and Application logs using `wevtutil.exe cl`.
+- **19:06:26** – Malicious svchost.exe download  
+  - Retrieved via certutil.exe from 78.141.196.6:8080
 
-- **19:09–19:10** – Data staging and exfiltration  
-  - Creation of `export-data.zip` in `WindowsCache`.  
-  - Exfiltration via `curl.exe` to a Discord webhook (`https://discord.com/api/webhooks/...`).
+- **19:07:21** – Malicious mm.exe (renamed Mimikatz) download  
+  - Retrieved via certutil.exe from 78.141.196.6:8080
 
-- **19:10–19:11** – Lateral movement attempt  
-  - Use of `cmdkey.exe` and `mstsc.exe` targeting `10.1.0.188`.
+- **19:07:46** – Persistence via scheduled task  
+  - Task name: "Windows Update Check"  
+  - Executes C:\ProgramData\WindowsCache\svchost.exe  
+  - Runs as SYSTEM
+
+- **19:08:26** – Credential dumping  
+  - mm.exe executed with: privilege::debug sekurlsa::logonpasswords
+
+- **19:08:58** – Data staging archive creation  
+  - export-data.zip written to C:\ProgramData\WindowsCache\
+
+- **19:09:21** – Data exfiltration  
+  - curl.exe uploads export-data.zip to a Discord webhook
+
+- **19:09:48–19:09:53** – Persistence via local account creation  
+  - Local user created: support  
+  - Added to Administrators group
+
+- **19:10:37** – Lateral movement setup  
+  - cmdkey.exe /generic:10.1.0.188 /user:fileadmin /pass:********
+
+- **19:10:41** – Lateral movement attempt  
+  - mstsc.exe /v:10.1.0.188
+
+- **19:11:04** – Command and Control (C2) communication  
+  - svchost.exe connects to 78.141.196.6:443
+
+- **19:11:39–19:11:46** – Log clearing (Anti-Forensics)  
+  - wevtutil cl Security  
+  - wevtutil cl System  
+  - wevtutil cl Application
 
 ---
 
