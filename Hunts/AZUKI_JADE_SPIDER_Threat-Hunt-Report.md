@@ -110,7 +110,7 @@ Compromised account: `azuki-sl\kenji.sato`.
 
 **Evidence**  
 
-![Evidencia](../.media/th1ev1.png)
+![Evidencia](../.media/th1ev2.png)
 
 **KQL**
 
@@ -144,7 +144,7 @@ The attacker executed:
 
 **Evidence**
 
-![Evidencia](../.media/th1ev2.png)
+![Evidencia](../.media/th1ev3.png)
 
 **KQL**
 
@@ -346,7 +346,7 @@ Task target: `C:\ProgramData\WindowsCache\svchost.exe`.
 
 **Evidence**  
 
-![Evidencia](../.media/th1ev2.png)
+![Evidencia](../.media/th1ev9.png)
 
 **KQL**
 
