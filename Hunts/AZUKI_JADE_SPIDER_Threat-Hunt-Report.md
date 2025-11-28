@@ -144,6 +144,8 @@ The attacker executed:
 
 ![Evidencia](../.media/th1ev2.png)
 
+**KQL**
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -173,6 +175,8 @@ Creation and hiding of: `C:\ProgramData\WindowsCache`.
 **Evidence**
 
 ![Evidencia](../.media/th1ev4.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -209,6 +213,8 @@ Defender exclusions added for:
 
 ![Evidencia](../.media/th1ev5.png)
 
+**KQL**
+
 ```kql
 DeviceRegistryEvents
 | where DeviceName == "azuki-sl"
@@ -240,6 +246,8 @@ Excluded path:
 
 ![Evidencia](../.media/th1ev6.png)
 
+**KQL**
+
 ```kql
 DeviceRegistryEvents
 | where DeviceName == "azuki-sl"
@@ -268,6 +276,8 @@ Abuse of `certutil.exe` to download `svchost.exe` and `mm.exe` from `78.141.196.
 **Evidence**
 
 ![Evidencia](../.media/th1ev7.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -305,6 +315,8 @@ Scheduled task name: **"Windows Update Check"**.
 
 ![Evidencia](../.media/th1ev8.png)
 
+**KQL**
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -334,6 +346,8 @@ Task target: `C:\ProgramData\WindowsCache\svchost.exe`.
 **Evidence**  
 
 ![Evidencia](../.media/th1ev2.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -368,6 +382,8 @@ Identify C2 IP and port.
 ![Evidencia](../.media/th1ev10.png)
 ![Evidencia](../.media/th1ev11.png)
 
+**KQL**
+
 ```kql
 DeviceNetworkEvents
 | where DeviceName == "azuki-sl"
@@ -398,6 +414,8 @@ Use of `mm.exe`, a renamed **Mimikatz** binary.
 **Evidence**
 
 ![Evidencia](../.media/th1ev12.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -430,6 +448,8 @@ Command: `sekurlsa::logonpasswords`.
 
 ![Evidencia](../.media/th1ev13.png)
 
+**KQL**
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -457,6 +477,8 @@ Archive name: `export-data.zip` in `C:\ProgramData\WindowsCache`.
 **Evidence**
 
 ![Evidencia](../.media/th1ev14.png)
+
+**KQL**
 
 ```kql
 DeviceFileEvents
@@ -487,6 +509,8 @@ Exfiltration via **Discord** (webhook on `discord.com`).
 **Evidence**
 
 ![Evidencia](../.media/th1ev15.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -520,6 +544,8 @@ First log cleared: **Security**.
 **Evidence**
 
 ![Evidencia](../.media/th1ev16.png)
+
+**KQL**
 
 ```kql
 DeviceProcessEvents
@@ -557,6 +583,8 @@ Local account created: `support`, added to `Administrators`.
 
 ![Evidencia](../.media/th1ev17.png)
 
+**KQL**
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -588,6 +616,8 @@ Script: `wupdate.ps1` in `%TEMP%`.
 
 ![Evidencia](../.media/th1ev18.png)
 
+**KQL**
+
 ```kql
 DeviceFileEvents
 | where DeviceName == "azuki-sl"
@@ -617,6 +647,8 @@ Target host: `10.1.0.188`.
 
 ![Evidencia](../.media/th1ev19.png)
 
+**KQL**
+
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
@@ -644,8 +676,18 @@ Identify the remote access tool used for lateral movement.
 Tool: `mstsc.exe` (Remote Desktop client).
 
 **Evidence**  
-Same query as above shows `mstsc.exe /v:10.1.0.188`.
+
 ![Evidencia](../.media/th1ev20.png)
+
+**KQL**
+
+```kql
+DeviceProcessEvents
+| where DeviceName == "azuki-sl"
+| where ProcessCommandLine contains "cmdkey" or ProcessCommandLine contains "mstsc"
+| project Timestamp, FileName, ProcessCommandLine
+| order by Timestamp asc
+```
 
 **Why it matters**  
 Using the native RDP client with cached credentials from `cmdkey.exe` disguises lateral movement as legitimate administration.
