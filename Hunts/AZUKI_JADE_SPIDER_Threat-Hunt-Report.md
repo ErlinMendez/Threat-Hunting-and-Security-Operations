@@ -34,67 +34,32 @@ Based on observed behavior, the attacker’s goals were:
 
 ---
 
-## 3. Timeline (UTC)
+## 3. Timeline
 
-- **18:36:18** – Initial RDP login  
-  - Logon from 88.97.178.12 using the account kenji.sato (Network → RemoteInteractive)
-
-- **18:46:27–18:46:52** – Initial script execution  
-  - Download of wupdate.ps1 and wupdate.bat via PowerShell (Invoke-WebRequest)
-
-- **18:49:27–18:49:29** – Microsoft Defender exclusions (Extensions) added  
-  - .bat  
-  - .ps1  
-  - .exe  
-
-- **18:49:27** – Microsoft Defender exclusions (Paths) added  
-  - %TEMP%  
-  - C:\ProgramData\WindowsCache
-
-- **18:49:48** – Malicious script creation  
-  - wupdate.ps1 written to C:\Users\kenji.sato\AppData\Local\Temp\wupdate.ps1
-
-- **19:05:33** – Staging directory creation and hiding  
-  - C:\ProgramData\WindowsCache created  
-  - Marked as hidden and system (+h +s)
-
-- **19:06:26** – Malicious svchost.exe download  
-  - Retrieved via certutil.exe from 78.141.196.6:8080
-
-- **19:07:21** – Malicious mm.exe (renamed Mimikatz) download  
-  - Retrieved via certutil.exe from 78.141.196.6:8080
-
-- **19:07:46** – Persistence via scheduled task  
-  - Task name: "Windows Update Check"  
-  - Executes C:\ProgramData\WindowsCache\svchost.exe  
-  - Runs as SYSTEM
-
-- **19:08:26** – Credential dumping  
-  - mm.exe executed with: privilege::debug sekurlsa::logonpasswords
-
-- **19:08:58** – Data staging archive creation  
-  - export-data.zip written to C:\ProgramData\WindowsCache\
-
-- **19:09:21** – Data exfiltration  
-  - curl.exe uploads export-data.zip to a Discord webhook
-
-- **19:09:48–19:09:53** – Persistence via local account creation  
-  - Local user created: support  
-  - Added to Administrators group
-
-- **19:10:37** – Lateral movement setup  
-  - cmdkey.exe /generic:10.1.0.188 /user:fileadmin /pass:********
-
-- **19:10:41** – Lateral movement attempt  
-  - mstsc.exe /v:10.1.0.188
-
-- **19:11:04** – Command and Control (C2) communication  
-  - svchost.exe connects to 78.141.196.6:443
-
-- **19:11:39–19:11:46** – Log clearing (Anti-Forensics)  
-  - wevtutil cl Security  
-  - wevtutil cl System  
-  - wevtutil cl Application
+| Timestamp (UTC)               | Flag | Activity Description                                         | Evidence Summary |
+|-------------------------------|------|---------------------------------------------------------------|------------------|
+| 2025-11-19T18:36:18.503997Z  | 1    | Successful logon from suspicious remote IP                   | User: kenji.sato · IP: 88.97.178.12 |
+| 2025-11-19T18:36:18.503997Z  | 2    | Compromised account identified                               | Account: kenji.sato |
+| 2025-11-19T19:04:01.7737787Z | 3    | Reconnaissance via ARP lookup                                | "ARP.EXE" -a |
+| 2025-11-19T19:05:33.766Z     | 4    | Hidden directory created for malware staging                 | attrib.exe +h +s C:\ProgramData\WindowsCache |
+| 2025-11-19T18:49:27.730Z     | 5    | Defender exclusions modified                                 | Extension added: .bat |
+| 2025-11-19T18:49:27.756Z     | 5    | Defender exclusions modified                                 | Extension added: .ps1 |
+| 2025-11-19T18:49:29.178Z     | 5    | Defender exclusions modified                                 | Extension added: .exe |
+| 2025-11-19T18:49:27.683Z     | 6    | Malicious path whitelisted in Defender                       | C:\Users\KENJI~1.SAT\AppData\Local\Temp |
+| 2025-11-19T19:06:58.5778439Z | 7    | Payload downloaded via certutil                              | Download: svchost.exe from 78.141.196.6:8080 |
+| 2025-11-19T19:07:46.9796512Z | 8    | Malicious scheduled task created                             | "Windows Update Check" |
+| 2025-11-19T19:07:46.9796512Z | 9    | Payload executed through scheduled task                      | svchost.exe from WindowsCache |
+| 2025-11-19T19:11:04.176Z     | 10   | Outbound connection to C2 server                             | RemoteIP: 78.141.196.6 |
+| 2025-11-19T19:11:04.176Z     | 11   | Encrypted communication with C2                              | RemotePort: 443 |
+| 2025-11-19T19:07:21.0804181Z | 12   | Malware component downloaded (mm.exe)                        | certutil.exe download |
+| 2025-11-19T19:08:26.2804285Z | 13   | Credential dumping using Mimikatz                            | sekurlsa::logonpasswords |
+| 2025-11-19T19:08:58.024Z     | 14   | Archive created for data exfiltration                        | export-data.zip |
+| 2025-11-19T19:09:21.3267384Z | 15   | Data exfiltrated to Discord using curl                       | curl upload → discord.com/api/webhooks |
+| 2025-11-19T19:11:39.093Z     | 16   | Security event logs cleared                                  | wevtutil.exe cl Security |
+| 2025-11-19T19:09:48.897Z     | 17   | Unauthorized user account created                            | net.exe user support /add |
+| 2025-11-19T18:49:48.7079818Z | 18   | Malicious script dropped in Temp                             | wupdate.ps1 |
+| 2025-11-19T19:10:37.262Z     | 19   | Stored credentials accessed using cmdkey                     | Target: 10.1.0.188 |
+| 2025-11-19T19:10:41.372Z     | 20   | Interactive RDP lateral movement detected                    | mstsc.exe /v:10.1.0.188 |
 
 ---
 
