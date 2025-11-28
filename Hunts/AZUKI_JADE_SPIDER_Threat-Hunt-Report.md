@@ -87,8 +87,8 @@ RDP session established from `88.97.178.12`.
 DeviceLogonEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where LogonType in ("RemoteInteractive", "Network")
-| project Timestamp, AccountName, LogonType, RemoteIP, AdditionalFields
+| where ActionType == "LogonSuccess"
+| project Timestamp, AccountDomain, AccountName, LogonType, ActionType, RemoteIP, AdditionalFields
 | order by Timestamp asc
 ```
 
@@ -117,8 +117,10 @@ Compromised account: `azuki-sl\kenji.sato`.
 ```kql
 DeviceLogonEvents
 | where DeviceName == "azuki-sl"
-| where RemoteIP == "88.97.178.12"
-| project Timestamp, AccountName, LogonType, RemoteIP
+| where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
+| where ActionType == "LogonSuccess"
+| project Timestamp, AccountDomain, AccountName, LogonType, ActionType, RemoteIP, AdditionalFields
+| order by Timestamp asc
 ```
 
 **Why it matters**  
@@ -150,7 +152,7 @@ The attacker executed:
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where ProcessCommandLine has_any ("ipconfig", "arp")
+| where ProcessCommandLine has_any ("ipconfig", "arp", "getmac")
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
 ```
@@ -182,8 +184,9 @@ Creation and hiding of: `C:\ProgramData\WindowsCache`.
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where FileName == "attrib.exe"
-| where ProcessCommandLine contains "WindowsCache"
+| where ProcessCommandLine contains "mkdir"
+    or ProcessCommandLine contains "New-Item"
+    or ProcessCommandLine contains "attrib"
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
 ```
@@ -284,7 +287,6 @@ DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
 | where ProcessCommandLine contains "http" or ProcessCommandLine contains "https"
-| where FileName in ("certutil.exe","powershell.exe","curl.exe","bitsadmin.exe")
 | project Timestamp, ProcessCommandLine, FileName, FolderPath
 | order by Timestamp asc
 ```
@@ -321,8 +323,7 @@ Scheduled task name: **"Windows Update Check"**.
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where FileName == "schtasks.exe"
-| where ProcessCommandLine contains "/create"
+| where ProcessCommandLine contains "schtasks.exe"
 | project Timestamp, ProcessCommandLine, FileName, FolderPath
 | order by Timestamp asc
 ```
@@ -388,9 +389,8 @@ Identify C2 IP and port.
 DeviceNetworkEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where InitiatingProcessFolderPath contains @"C:\ProgramData\WindowsCache\svchost.exe"
-| project Timestamp, InitiatingProcessFileName, InitiatingProcessFolderPath,
-          RemoteIP, RemotePort, Protocol
+| where InitiatingProcessFolderPath contains @"C:\ProgramData\WindowsCache"
+| project Timestamp, InitiatingProcessFileName, InitiatingProcessFolderPath, RemoteIP, RemotePort, Protocol
 | order by Timestamp asc
 ```
 
@@ -421,7 +421,7 @@ Use of `mm.exe`, a renamed **Mimikatz** binary.
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where FileName == "mm.exe"
+| where  FileName == "certutil.exe"
 | project Timestamp, ProcessCommandLine, FileName, FolderPath
 | order by Timestamp asc
 ```
@@ -453,7 +453,7 @@ Command: `sekurlsa::logonpasswords`.
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
-| where ProcessCommandLine contains "sekurlsa::logonpasswords"
+| where ProcessCommandLine contains "::"
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
 ```
@@ -516,7 +516,6 @@ Exfiltration via **Discord** (webhook on `discord.com`).
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
-| where FileName == "curl.exe"
 | where ProcessCommandLine contains "export-data.zip"
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
@@ -552,7 +551,7 @@ DeviceProcessEvents
 | where DeviceName == "azuki-sl"
 | where Timestamp between (datetime(2025-11-19) .. datetime(2025-11-20))
 | where FileName == "wevtutil.exe"
-| where ProcessCommandLine contains " cl "
+| where ProcessCommandLine contains "cl"
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
 ```
@@ -588,7 +587,8 @@ Local account created: `support`, added to `Administrators`.
 ```kql
 DeviceProcessEvents
 | where DeviceName == "azuki-sl"
-| where ProcessCommandLine contains "net" and ProcessCommandLine contains " add "
+| where ProcessCommandLine contains "net"
+      and ProcessCommandLine contains "add"
 | project Timestamp, FileName, ProcessCommandLine
 | order by Timestamp asc
 ```
