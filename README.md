@@ -1,4 +1,4 @@
-# 🕵️‍♂️ Threat-Hunting-Lab
+# 🕵️‍♂️ Threat Hunting and Security Operations
 
 Repository containing **real-world threat hunting investigations**, documented in clear and structured Markdown reports.
 
